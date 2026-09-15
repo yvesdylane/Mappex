@@ -42,18 +42,37 @@ std::string writeBase(const std::string& exeDir) {
     return base;
 }
 
+// User-owned data dir for device profiles: $XDG_DATA_HOME/mappex (default
+// ~/.local/share/mappex). Installed under /opt the app is read-only, so profiles
+// live here instead of next to the binary.
+std::string userDataDir() {
+    const char* xdg = std::getenv("XDG_DATA_HOME");
+    std::string base = xdg && *xdg ? xdg : std::string(std::getenv("HOME") ? std::getenv("HOME") : "") + "/.local/share";
+    if (base.empty()) base = ".";
+    return base + "/mappex";
+}
+
 }  // namespace
 
 std::string findDeviceProfilePath(const DeviceIdentity& id) {
     std::string exeDir = executableDir();
     std::string relative = DeviceProfile::pathFor(id);
+    std::string userPath = userDataDir() + "/" + relative;
 
+    // Read order: cwd (dev), then the user's own data dir, then the bundled
+    // locations next to the binary (project root in dev, /opt/Mappex when
+    // installed). User-edited profiles always win over bundled ones.
     for (const auto& dir : searchDirs(exeDir)) {
         std::string candidate = dir + "/" + relative;
         if (access(candidate.c_str(), R_OK) == 0) return candidate;
     }
+    if (access(userPath.c_str(), R_OK) == 0) return userPath;
 
-    return writeBase(exeDir) + "/" + relative;
+    // Write destination: the location next to the binary when it is writable
+    // (dev checkout), otherwise the user's data dir (system install).
+    std::string base = writeBase(exeDir);
+    if (access(base.c_str(), W_OK) == 0) return base + "/" + relative;
+    return userPath;
 }
 
 int parseId(const std::string& s) {

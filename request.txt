@@ -1,0 +1,129 @@
+# request.txt
+
+This project is a CLI + GUI desktop application (controller remapper). It exposes
+**no HTTP endpoints**, so there are no HTTP requests to document or test. The
+verification surface below is the CLI and the interactive GUI.
+
+## Build
+
+```
+cmake -B build
+cmake --build build
+ctest --test-dir build          # run all unit/integration tests
+```
+
+## Install
+
+`install.sh` clones the git repo, builds, installs to `/opt/Mappex` and creates a
+desktop launcher (`map` -> `Mappex --gui`) plus a `~/.local/bin/mappex` CLI link.
+
+```
+./install.sh                              # REPO_URL (git@github.com:yvesdylane/Mappex.git)
+REPO_URL=<url> BRANCH=main ./install.sh   # overrides
+SKIP_DEPS=1 INSTALL_DIR=/tmp/x ./install.sh   # staging/CI: no system packages, custom prefix
+```
+
+Installed layout: `/opt/Mappex/Mappex`, `mappings/`, `devices/` (bundled defaults),
+`assets/mappex.svg`. Device profiles are **written to `~/.local/share/mappex/devices/`**
+(an install dir next to `/opt` is read-only). Running from a dev checkout (build
+dir whose parent is writable) keeps the old behaviour and writes next to the project.
+
+## Storage model
+
+Each physical device gets one profile file, keyed on its identity:
+
+- Key: `vendor_product[_serial|_usb-port]` (serial when the kernel reports one,
+  otherwise the sanitised `/dev/input/by-path` name — so two identical pads stay
+  distinguishable by which USB port they sit in).
+- File: `devices/<key>.json`, containing `deviceName`, `vendorId`, `productId`,
+  `serial`, the virtual device identity, `autoMap`, and the nested `mapping`
+  (buttons/axes/hats).
+- The old `mappings/<target>/<source>.json` scheme is superseded; existing
+  profiles are not read — each device is re-mapped once under the new layout.
+- Profiles saved before the Xbox-spoof change (virtual vendor `0x1234` / name
+  `Mapped ...`) are migrated on load to the spoofed `045e:028e` identity.
+- Profiles written while the D-pad was a hat-axis pair (`axes.ABS_HAT0X =
+  ["DPadX"]`) are migrated on load to the four directional D-pad buttons
+  (`hats.ABS_HAT0X."-1" = ["DPadLeft"]`) — no re-binding needed.
+
+## Run (terminal UI)
+
+```
+./build/Mappex --terminal                # interactive command prompt
+./build/Mappex --terminal --device /dev/input/event5
+```
+
+Terminal commands:
+
+```
+list                      list attached controllers (greener = active)
+status <id>               identity key, profile path, mapping/autoMap state
+load <id>                 reload this device's saved profile
+save <id>                 save the current mapping to devices/<key>.json
+active <id> on|off        toggle the exclusive grab + virtual output
+map <id> <control>        capture any press/pull and bind it, e.g. map 0 A
+map <id> -all             guided walk over the whole controller
+help / quit
+```
+
+Virtual device: **`045e:028e` "Microsoft X-Box 360 pad"** (a real Xbox 360 USB identity,
+so Steam/Lutris/PCMR tools recognize it as an Xbox pad). The D-pad is exposed as
+**four buttons** `BTN_DPAD_UP`/`BTN_DPAD_DOWN`/`BTN_DPAD_LEFT`/`BTN_DPAD_RIGHT`,
+not hat axes. Logical controls: 14 buttons (`A B X Y LB RB Start Back LS RS` +
+D-pad directions), 2 triggers, 4 sticks.
+Verification: `sudo dnf install joystick` then `jstest /dev/input/jsN` on the
+virtual pad should show `BtnDpadUp/Down/Left/Right` acting when the D-pad is used.
+
+Example session (bind the physical D-pad-up hat to logical `A`, then persist and
+activate):
+
+```
+[user] map 0 A
+[app]  Press/pull the physical control for "A"...
+[user] <press D-pad up>
+[app]  Physical ABS_HAT0Y (-) -> A. Run 'save' to persist.
+[user] save 0
+[app]  Saved profile: devices/045e_028e_pci-0000_00_14.0-usb-0_1.2_1.0-event-joystick.json
+[user] active 0 on
+[app]  Mapping active for controller: ...
+```
+
+Same works for the D-pad buttons: `map 0 DPadUp` + press physical D-pad-up binds
+`ABS_HAT0Y (-)`, and the virtual pad emits `BTN_DPAD_UP`.
+
+## Run (GUI)
+
+```
+./build/Mappex --gui
+```
+
+- Left: controller list; an active controller shows **green** with `(mapped)`.
+- Right: one dropdown per logical control (14 buttons incl. the four D-pad
+  directions, 2 triggers, 4 sticks). Binding a D-pad row maps that one physical
+  D-pad direction to the matching `BTN_DPAD_*` button.
+- Each row: `— none —`, `Record…` (press/pull the physical control to bind it),
+  or the device's actual buttons / hat directions / analog axes.
+- `Virtual mapping active` checkbox grabs/releases the physical pad exclusively
+  (EVIOCGRAB) and switches the per-device virtual uinput output on/off.
+- `Auto-map on connect` checkbox persists immediately to the device profile; a
+  future connect with autoMap on grabs the pad right after attach.
+- `Save profile` persists to `devices/<key>.json`; `Clear all` resets bindings.
+
+## Manual GUI test checklist (conditions)
+
+Expected results for each step:
+
+| # | Action | Expected |
+|---|--------|----------|
+| 1 | Launch `Mappex --gui` with a gamepad attached | Controller appears on the left, gray/green; selecting it shows the form |
+| 2 | Select a physical button for row `A` | Preview shows the button label; row `B` still shows `— none —` |
+| 3 | Select the same physical button for row `B` | Row `A` reverts to `— none —` (last-wins: one source per target) |
+| 4 | Choose `Record…` on a D-pad row (e.g. `DPadUp`), press D-pad Up | `DPadUp` shows `ABS_HAT0Y (-)`; gamepad/`jstest` shows `BtnDpadUp` on press |
+| 5 | Choose `Record…` on `LeftTrigger`, pull the left analog stick | `LeftTrigger` shows `ABS_X` (analog → analog) |
+| 6 | Bind an analog stick to a digital row, e.g. `A` → `Record…` + pull stick | `A` shows `ABS_X`; the virtual pad's A button flips at ~half stick travel |
+| 7 | Tick `Auto-map on connect`, relaunch | The controller auto-activates on connect (green, grabs, evtest goes silent) |
+| 8 | Untick `Virtual mapping active` while a game holds a virtual button | Game sees the button release (reset), evtest/watchers see the physical pad again |
+| 9 | Hot-unplug the pad while active | Detach log; the virtual device node disappears; no crash |
+| 10 | Re-plug the same pad into the same port | Same identity key; mapping + autoMap state restored from `devices/<key>.json` |
+| 11 | `Save profile`, close, reopen, select controller | Previews restore every binding from disk |
+| 12 | `Clear all` | Every row returns to `— none —` |

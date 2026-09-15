@@ -7,8 +7,10 @@
 #include "controller/DeviceIdentity.h"
 #include "controller/PhysicalController.h"
 
-// Per-device profiles (devices/<key>.json): search cwd, exe dir, project root,
-// then fall back to the project root as the write destination for new profiles.
+// Per-device profiles (devices/<key>.json): checked in cwd, the user's data dir
+// (~/.local/share/mappex/devices), then next to the binary (project root in dev,
+// /opt/Mappex when installed). Written next to the binary when that location is
+// writable (dev checkout), otherwise into the user's data dir (system install).
 std::string findDeviceProfilePath(const DeviceIdentity& id);
 
 // 0..INTMAX or -1 when the argument is not a positive integer.

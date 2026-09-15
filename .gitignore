@@ -6,3 +6,12 @@ cmake-build-*/
 *.json.user
 .vscode/
 .DS_Store
+imgui.ini
+
+# stale per-test build artifacts (tests are built by CTest from source)
+tests/eventReaderTest
+tests/uinputTest
+tests/passthroughTest
+tests/mappedPassthroughTest
+tests/mappedPassthroughJsonTest
+tests/*.out
