@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.1)
-project(Mapping)
+project(Mappex)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,7 +12,7 @@ pkg_check_modules(NLOHMANN REQUIRED nlohmann_json)
 pkg_check_modules(READLINE REQUIRED readline)
 pkg_check_modules(UDEV REQUIRED libudev)
 
-add_executable(Mapping
+add_executable(Mappex
         src/main.cpp
         src/Application.cpp
         src/Logger.cpp
@@ -31,9 +31,9 @@ add_executable(Mapping
         src/virtual/UInputBackend.cpp
 )
 
-target_include_directories(Mapping PRIVATE include ${LIBEVDEV_INCLUDE_DIRS} ${NLOHMANN_INCLUDE_DIRS} ${READLINE_INCLUDE_DIRS} ${UDEV_INCLUDE_DIRS})
-target_link_directories(Mapping PRIVATE ${LIBEVDEV_LIBRARY_DIRS} ${READLINE_LIBRARY_DIRS} ${UDEV_LIBRARY_DIRS})
-target_link_libraries(Mapping PRIVATE ${LIBEVDEV_LIBRARIES} ${READLINE_LIBRARIES} ${UDEV_LIBRARIES} Threads::Threads)
+target_include_directories(Mappex PRIVATE include ${LIBEVDEV_INCLUDE_DIRS} ${NLOHMANN_INCLUDE_DIRS} ${READLINE_INCLUDE_DIRS} ${UDEV_INCLUDE_DIRS})
+target_link_directories(Mappex PRIVATE ${LIBEVDEV_LIBRARY_DIRS} ${READLINE_LIBRARY_DIRS} ${UDEV_LIBRARY_DIRS})
+target_link_libraries(Mappex PRIVATE ${LIBEVDEV_LIBRARIES} ${READLINE_LIBRARIES} ${UDEV_LIBRARIES} Threads::Threads)
 
 # ---- GUI (ImGui + GLFW): only when glfw-devel is installed ----
 
@@ -54,9 +54,9 @@ if(glfw3_FOUND)
     target_include_directories(imgui PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends)
     target_link_libraries(imgui PUBLIC glfw OpenGL::GL)
 
-    target_compile_definitions(Mapping PRIVATE GUI_ENABLED)
-    target_sources(Mapping PRIVATE src/ui/GuiUI.cpp)
-    target_link_libraries(Mapping PRIVATE imgui)
+    target_compile_definitions(Mappex PRIVATE GUI_ENABLED)
+    target_sources(Mappex PRIVATE src/ui/GuiUI.cpp)
+    target_link_libraries(Mappex PRIVATE imgui)
 else()
     message(STATUS "glfw3 not found — GUI disabled. Install with: sudo dnf install glfw-devel mesa-libGL-devel")
 endif()

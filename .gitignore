@@ -1,5 +1,8 @@
-/cmake-build-release/
-/cmake-build-debug/
-/tests/
-/request.txt
-/.idea
+build/
+build-*/
+cmake-build-*/
+.idea/
+*.user
+*.json.user
+.vscode/
+.DS_Store
