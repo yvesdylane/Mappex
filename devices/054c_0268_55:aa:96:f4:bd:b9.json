@@ -1,0 +1,81 @@
+{
+    "autoMap": true,
+    "deviceName": "Sony PS3 Controller",
+    "mapping": {
+        "axes": {
+            "ABS_RX": [
+                "RightStickX"
+            ],
+            "ABS_RY": [
+                "RightStickY"
+            ],
+            "ABS_RZ": [
+                "RightTrigger"
+            ],
+            "ABS_X": [
+                "LeftStickX"
+            ],
+            "ABS_Y": [
+                "LeftStickY"
+            ],
+            "ABS_Z": [
+                "LeftTrigger"
+            ]
+        },
+        "buttons": {
+            "BTN_DPAD_DOWN": [
+                "DPadDown"
+            ],
+            "BTN_DPAD_LEFT": [
+                "DPadLeft"
+            ],
+            "BTN_DPAD_RIGHT": [
+                "DPadRight"
+            ],
+            "BTN_DPAD_UP": [
+                "DPadUp"
+            ],
+            "BTN_EAST": [
+                "B"
+            ],
+            "BTN_MODE": [
+                "Home"
+            ],
+            "BTN_NORTH": [
+                "Y"
+            ],
+            "BTN_SELECT": [
+                "Back"
+            ],
+            "BTN_SOUTH": [
+                "A"
+            ],
+            "BTN_START": [
+                "Start"
+            ],
+            "BTN_THUMBL": [
+                "LS"
+            ],
+            "BTN_THUMBR": [
+                "RS"
+            ],
+            "BTN_TL": [
+                "LB"
+            ],
+            "BTN_TR": [
+                "RB"
+            ],
+            "BTN_WEST": [
+                "X"
+            ]
+        },
+        "hats": {}
+    },
+    "productId": 616,
+    "serial": "55:aa:96:f4:bd:b9",
+    "vendorId": 1356,
+    "virtualName": "Microsoft X-Box 360 pad",
+    "virtualProductId": 654,
+    "virtualVendorId": 1118,
+    "virtualVersion": 1
+}

@@ -1,0 +1,83 @@
+{
+    "autoMap": true,
+    "deviceName": " USB Gamepad          ",
+    "mapping": {
+        "axes": {
+            "ABS_RZ": [
+                "RightStickX"
+            ],
+            "ABS_X": [
+                "LeftStickX"
+            ],
+            "ABS_Y": [
+                "LeftStickY"
+            ],
+            "ABS_Z": [
+                "RightStickY"
+            ]
+        },
+        "buttons": {
+            "BTN_BASE": [
+                "LeftTrigger"
+            ],
+            "BTN_BASE2": [
+                "RightTrigger"
+            ],
+            "BTN_BASE3": [
+                "Back"
+            ],
+            "BTN_BASE4": [
+                "Start"
+            ],
+            "BTN_BASE5": [
+                "LS"
+            ],
+            "BTN_BASE6": [
+                "RS"
+            ],
+            "BTN_PINKIE": [
+                "RB"
+            ],
+            "BTN_THUMB": [
+                "B"
+            ],
+            "BTN_THUMB2": [
+                "A"
+            ],
+            "BTN_TOP": [
+                "Y"
+            ],
+            "BTN_TOP2": [
+                "LB"
+            ],
+            "BTN_TRIGGER": [
+                "X"
+            ]
+        },
+        "hats": {
+            "ABS_HAT0X": {
+                "-1": [
+                    "DPadLeft"
+                ],
+                "1": [
+                    "DPadRight"
+                ]
+            },
+            "ABS_HAT0Y": {
+                "-1": [
+                    "DPadUp"
+                ],
+                "1": [
+                    "DPadDown"
+                ]
+            }
+        }
+    },
+    "productId": 1,
+    "serial": "",
+    "vendorId": 2064,
+    "virtualName": "Microsoft X-Box 360 pad",
+    "virtualProductId": 654,
+    "virtualVendorId": 1118,
+    "virtualVersion": 1
+}

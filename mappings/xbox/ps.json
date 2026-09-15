@@ -1,0 +1,57 @@
+{
+    "axes": {
+        "ABS_RY": [
+            "RightStickY"
+        ],
+        "ABS_Y": [
+            "LeftStickY",
+            "RightStickX"
+        ],
+        "ABS_Z": [
+            "RightTrigger",
+            "LeftStickX"
+        ]
+    },
+    "buttons": {
+        "BTN_DPAD_DOWN": [
+            "DPadDown"
+        ],
+        "BTN_DPAD_LEFT": [
+            "DPadLeft"
+        ],
+        "BTN_DPAD_RIGHT": [
+            "DPadRight"
+        ],
+        "BTN_DPAD_UP": [
+            "DPadUp"
+        ],
+        "BTN_EAST": [
+            "B"
+        ],
+        "BTN_NORTH": [
+            "Y"
+        ],
+        "BTN_SELECT": [
+            "Back"
+        ],
+        "BTN_SOUTH": [
+            "A"
+        ],
+        "BTN_START": [
+            "Start"
+        ],
+        "BTN_TL": [
+            "LB"
+        ],
+        "BTN_TL2": [
+            "LS",
+            "LeftTrigger"
+        ],
+        "BTN_TR": [
+            "RB"
+        ],
+        "BTN_WEST": [
+            "X"
+        ]
+    }
+}
